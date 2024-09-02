@@ -8,6 +8,7 @@ fn read_lines(filename: &str)->Vec<String> {
     for line in read_to_string(filename).unwrap().lines(){
         vector.push(line.to_string());
     }
+    
     vector
 }
 
