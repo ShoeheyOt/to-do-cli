@@ -34,16 +34,22 @@ fn main()->io::Result<()> {
 
         println!("See you soon")
     } else if input.trim() == "2" {
-        let mut todo = String::new();
-        io::stdin().read_line(&mut todo)?;
-
-        match file.write(todo.as_bytes()){
-            Err(why) => panic!("couldn't add {} to {}: {}", input.trim(),display,why),
-            Ok(_) => print!("successfully wrote {} to {}", input.trim(), display) 
+        let mut new_todo = String::new();
+        io::stdin().read_line(&mut new_todo)?;
+        let line_number = if read_lines("todo.txt").len() == 0 {
+            1
+        } else {
+            read_lines("todo.txt").len() + 1
+        };
+        let add_todo = line_number.to_string() + " " + &new_todo;
+        match file.write(add_todo.as_bytes()){
+            Err(why) => panic!("couldn't add {} to {}: {}", new_todo.trim(),display,why),
+            Ok(_) => println!("successfully wrote {} to {}", new_todo.trim(), display) 
         }
     } else if input.trim() == "1" {
-        println!("display: {:?}", read_lines("todo.txt"))
-
+        for todo in read_lines("todo.txt") {
+            println!("{}", todo)
+        }
     }
     Ok(())
 }
