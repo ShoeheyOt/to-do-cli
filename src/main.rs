@@ -36,13 +36,8 @@ fn main()->io::Result<()> {
     } else if input.trim() == "2" {
         let mut new_todo = String::new();
         io::stdin().read_line(&mut new_todo)?;
-        let line_number = if read_lines("todo.txt").len() == 0 {
-            1
-        } else {
-            read_lines("todo.txt").len() + 1
-        };
-        let add_todo = line_number.to_string() + " " + &new_todo;
-        match file.write(add_todo.as_bytes()){
+        
+        match file.write(new_todo.as_bytes()){
             Err(why) => panic!("couldn't add {} to {}: {}", new_todo.trim(),display,why),
             Ok(_) => println!("successfully wrote {} to {}", new_todo.trim(), display) 
         }
@@ -50,6 +45,25 @@ fn main()->io::Result<()> {
         for todo in read_lines("todo.txt") {
             println!("{}", todo)
         }
-    }
+    } else if input.trim() == "3" {
+        println!("which one? >");
+        for todo in read_lines("todo.txt"){
+            println!("{}",todo)
+        }
+        let mut delete_todo= String::new();
+        
+        io::stdin().read_line(&mut delete_todo)?;
+        
+        let todo_list:Vec<String> = read_lines("todo.txt").into_iter().filter(|todo| *todo != delete_todo.trim() ).collect();
+        
+        let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path){
+            Err(why)=> panic!("couldn't open the file {} : {}", display,why),
+            Ok(file)=>file,
+        };
+        
+        for todo in todo_list {
+            writeln!(file_truncate, "{}", todo)?;
+        }
+        }
     Ok(())
 }
