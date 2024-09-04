@@ -23,47 +23,62 @@ fn main()->io::Result<()> {
     };
 
     let mut input = String::new();
-    println!("1:Display, 2:Add, 3:Delete, 4:Exit");
-    println!("Please type number ->");
-    io::stdin().read_line(&mut input)?;
+    
+    loop{        
+        println!("1:Display, 2:Add, 3:Delete, 4:Exit");
+        println!("Please type number ->");
+        io::stdout().flush()?;
 
-    if input.trim() == "4" {
-        println!("Are you sure?");
-
+        input.clear();
         io::stdin().read_line(&mut input)?;
 
-        println!("See you soon")
-    } else if input.trim() == "2" {
-        let mut new_todo = String::new();
-        io::stdin().read_line(&mut new_todo)?;
         
-        match file.write(new_todo.as_bytes()){
-            Err(why) => panic!("couldn't add {} to {}: {}", new_todo.trim(),display,why),
-            Ok(_) => println!("successfully wrote {} to {}", new_todo.trim(), display) 
-        }
-    } else if input.trim() == "1" {
-        for todo in read_lines("todo.txt") {
-            println!("{}", todo)
-        }
-    } else if input.trim() == "3" {
-        println!("which one? >");
-        for todo in read_lines("todo.txt"){
-            println!("{}",todo)
-        }
-        let mut delete_todo= String::new();
+        if input.trim() == "4" {
+            println!("See you!");
+            break;
+        } 
         
-        io::stdin().read_line(&mut delete_todo)?;
+        if input.trim() == "2" {
+            let mut new_todo = String::new();
+            io::stdin().read_line(&mut new_todo)?;
+            
+            match file.write(new_todo.as_bytes()){
+                Err(why) => panic!("couldn't add {} to {}: {}", new_todo.trim(),display,why),
+                Ok(_) => println!("successfully wrote {} to {}", new_todo.trim(), display) 
+            }
+            continue;
+        } 
+
+        if input.trim() == "1" {
+            for todo in read_lines("todo.txt") {
+                println!("{}", todo)
+            }
+            continue;
+        } 
         
-        let todo_list:Vec<String> = read_lines("todo.txt").into_iter().filter(|todo| *todo != delete_todo.trim() ).collect();
-        
-        let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path){
-            Err(why)=> panic!("couldn't open the file {} : {}", display,why),
-            Ok(file)=>file,
-        };
-        
-        for todo in todo_list {
-            writeln!(file_truncate, "{}", todo)?;
+        if input.trim() == "3" {
+            println!("which one? >");
+            for todo in read_lines("todo.txt"){
+                println!("{}",todo)
+            }
+            let mut delete_todo= String::new();
+            
+            io::stdin().read_line(&mut delete_todo)?;
+            
+            let todo_list:Vec<String> = read_lines("todo.txt").into_iter().filter(|todo| *todo != delete_todo.trim() ).collect();
+            
+            let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path){
+                Err(why)=> panic!("couldn't open the file {} : {}", display,why),
+                Ok(file)=>file,
+            };
+            
+            for todo in todo_list {
+                writeln!(file_truncate, "{}", todo)?;
+            }
+
+            println!("successfully delete {}", delete_todo);
+            continue;
         }
-        }
+    }
     Ok(())
 }
