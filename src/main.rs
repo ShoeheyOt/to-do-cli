@@ -1,7 +1,7 @@
 use std::fs::{read_to_string, OpenOptions};
 use std::io;
 use std::io::prelude::*;
-use std::path::Path;
+use std::path::{Display, Path};
 
 fn read_lines(filename: &str) -> Vec<String> {
     let mut vector = Vec::<String>::new();
@@ -16,6 +16,23 @@ fn find_position(delete_todo: &String) -> Option<usize> {
     read_lines("todo.txt")
         .iter()
         .position(|todo| todo == delete_todo.trim())
+}
+
+fn update_file(delete_todo: &String, display: &Display, path: &Path) -> io::Result<()> {
+    let todo_list: Vec<String> = read_lines("todo.txt")
+        .into_iter()
+        .filter(|todo| *todo != delete_todo.trim())
+        .collect();
+
+    let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path) {
+        Err(why) => panic!("couldn't open the file {} : {}", display, why),
+        Ok(file) => file,
+    };
+
+    for todo in todo_list {
+        writeln!(file_truncate, "{}", todo)?;
+    }
+    Ok(())
 }
 
 fn main() -> io::Result<()> {
@@ -81,22 +98,12 @@ fn main() -> io::Result<()> {
 
                 match find_position(&delete_todo) {
                     Some(index) => {
-                        let todo_list: Vec<String> = read_lines("todo.txt")
-                            .into_iter()
-                            .filter(|todo| *todo != delete_todo.trim())
-                            .collect();
-
-                        let mut file_truncate =
-                            match OpenOptions::new().write(true).truncate(true).open(path) {
-                                Err(why) => panic!("couldn't open the file {} : {}", display, why),
-                                Ok(file) => file,
-                            };
-
-                        for todo in todo_list {
-                            writeln!(file_truncate, "{}", todo)?;
-                        }
-
-                        println!("successfully delete {} index:{}\n", delete_todo, index);
+                        match update_file(&delete_todo, &display, path) {
+                            Err(why) => {
+                                println!("couldn't delete from file : {} index is {}", why, index)
+                            }
+                            Ok(_) => println!("successfully delete {}", delete_todo),
+                        };
                     }
 
                     None => println!("not found\n"),
