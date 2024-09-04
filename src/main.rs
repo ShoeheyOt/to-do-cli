@@ -1,21 +1,10 @@
 pub mod file_operation;
-use file_operation::{find_position, read_lines, update_file};
+use file_operation::{add_lines, find_position, read_lines, update_file};
 
-use std::fs::OpenOptions;
 use std::io;
 use std::io::prelude::*;
-use std::path::Path;
 
 fn main() -> io::Result<()> {
-    let path = Path::new("todo.txt");
-
-    let display = path.display();
-
-    let mut file = match OpenOptions::new().append(true).open(path) {
-        Err(why) => panic!("couldn't find {} : {}", display, why),
-        Ok(file) => file,
-    };
-
     let mut input = String::new();
 
     loop {
@@ -45,10 +34,7 @@ fn main() -> io::Result<()> {
             io::stdout().flush()?;
             io::stdin().read_line(&mut new_todo)?;
 
-            match file.write(new_todo.as_bytes()) {
-                Err(why) => panic!("couldn't add {} to {}: {}", new_todo.trim(), display, why),
-                Ok(_) => println!("successfully wrote {} to {} \n", new_todo.trim(), display),
-            }
+            add_lines(new_todo);
             continue;
         }
 
@@ -69,7 +55,7 @@ fn main() -> io::Result<()> {
 
                 match find_position(&delete_todo) {
                     Some(index) => {
-                        match update_file(&delete_todo, &display, path) {
+                        match update_file(&delete_todo) {
                             Err(why) => {
                                 println!("couldn't delete from file : {} index is {}", why, index)
                             }
