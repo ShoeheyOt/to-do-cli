@@ -2,25 +2,42 @@ use std::fs::{read_to_string, OpenOptions};
 use std::io::{self, Write};
 use std::path::Path;
 
+/// this is a function to read lines from text file
+///
+///
+///
+///
+///
 pub fn read_lines(filename: &str) -> Vec<String> {
     let mut vector = Vec::<String>::new();
     for line in read_to_string(filename).unwrap().lines() {
         vector.push(line.to_string());
     }
-
     vector
 }
-
-pub fn add_lines(new_todo: String) {
+/// Adds a new todo item to the end of the "todo.txt" file.
+///
+/// ## Arguments
+///
+/// * `new_todo`: The string representing the new todo item to add.
+///
+/// ## Returns
+///
+/// An `io::Result<()>` indicating whether the operation was successful.
+/// Returns `Ok(())` if the operation succeeds, or an `Err` containing the I/O error if it fails.
+///
+///
+/// ## Examples
+/// add _lines("Buy milk".to_string());
+/// ```
+pub fn add_lines(new_todo: &str) -> io::Result<()> {
     let path = Path::new("todo.txt");
-    let mut file = match OpenOptions::new().append(true).open(path) {
-        Err(why) => panic!("couldn't find file {} : {}", path.display(), why),
-        Ok(file) => file,
-    };
-    match file.write(new_todo.as_bytes()) {
-        Err(why) => panic!("couldn't add {} to {} : {}", new_todo, path.display(), why),
-        Ok(_) => println!("success!! new todo : {}", new_todo),
-    }
+
+    let mut file = OpenOptions::new().append(true).open(path)?;
+
+    file.write(new_todo.as_bytes())?;
+
+    Ok(())
 }
 
 pub fn find_position(delete_todo: &String) -> Option<usize> {

@@ -34,7 +34,10 @@ fn main() -> io::Result<()> {
             io::stdout().flush()?;
             io::stdin().read_line(&mut new_todo)?;
 
-            add_lines(new_todo);
+            match add_lines(&new_todo) {
+                Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
+                Ok(_) => println!("success!"),
+            }
             continue;
         }
 
