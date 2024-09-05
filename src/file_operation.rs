@@ -137,10 +137,7 @@ pub fn try_update_file(delete_todo: &String) -> io::Result<()> {
             .collect::<Vec<String>>()),
     };
 
-    let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path) {
-        Err(why) => panic!("couldn't open the file {} : {}", path.display(), why),
-        Ok(file) => file,
-    };
+    let mut file_truncate = OpenOptions::new().write(true).truncate(true).open(path)?;
 
     for todo in todo_list? {
         writeln!(file_truncate, "{}", todo)?;
