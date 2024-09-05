@@ -30,7 +30,7 @@ use std::path::Path;
 ///   Err(e) => eprintln!("Error reading file: {}", e),
 /// }
 ///
-pub fn read_lines<P>(filename: P) -> io::Result<Vec<String>>
+pub fn try_read_lines<P>(filename: P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
 {
@@ -56,7 +56,7 @@ where
 ///
 /// ``````
 ///  add _lines("Buy milk".to_string());
-pub fn add_lines(new_todo: &str) -> io::Result<()> {
+pub fn try_add_lines(new_todo: &str) -> io::Result<()> {
     let path = Path::new("todo.txt");
 
     let mut file = OpenOptions::new().append(true).open(path)?;
@@ -86,7 +86,7 @@ pub fn add_lines(new_todo: &str) -> io::Result<()> {
 ///  }
 /// ```
 pub fn find_index_opt(searched_todo: &String) -> Option<usize> {
-    match read_lines("todo.txt") {
+    match try_read_lines("todo.txt") {
         Err(why) => {
             eprintln!("couldn't read the lines : {}", why);
             None
@@ -118,15 +118,15 @@ pub fn find_index_opt(searched_todo: &String) -> Option<usize> {
 /// ```
 ///  use std::path::Path;
 ///  let delete_todo = String::from("Buy milk");
-///  match update_file(&delete_todo) {
+///  match try_update_file(&delete_todo) {
 ///      Ok(_) => println!("Todo list updated successfully"),
 ///      Err(e) => eprintln!("Error updating todo list: {}", e),
 ///  }
 ///
-pub fn update_file(delete_todo: &String) -> io::Result<()> {
+pub fn try_update_file(delete_todo: &String) -> io::Result<()> {
     let path = Path::new("todo.txt");
 
-    let todo_list: io::Result<Vec<String>> = match read_lines("todo.txt") {
+    let todo_list: io::Result<Vec<String>> = match try_read_lines("todo.txt") {
         Err(why) => {
             eprintln!("couldn't read lines: {}", why);
             Err(why)
