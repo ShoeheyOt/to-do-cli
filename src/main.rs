@@ -52,13 +52,13 @@ fn main() -> io::Result<()> {
                 io::stdout().flush()?;
             } else {
                 println!("which one? >");
-                match try_read_lines("todo.txt") {
-                    Err(why) => eprintln!("couldn't read file : {}", why),
-                    Ok(vector) => {
-                        for todo in vector {
-                            println!("{}", todo)
-                        }
+
+                if let Ok(vector) = try_read_lines("todo.txt") {
+                    for todo in vector {
+                        println!("{}", todo)
                     }
+                } else {
+                    eprintln!("couldn't read file!!!")
                 }
 
                 let mut delete_todo = String::new();
@@ -66,15 +66,7 @@ fn main() -> io::Result<()> {
                 io::stdin().read_line(&mut delete_todo)?;
 
                 match find_index_opt(&delete_todo) {
-                    Some(index) => {
-                        match try_update_file(&delete_todo) {
-                            Err(why) => {
-                                eprintln!("couldn't delete from file : {} index is {}", why, index)
-                            }
-                            Ok(_) => println!("successfully delete {}", delete_todo),
-                        };
-                    }
-
+                    Some(_) => try_update_file(&delete_todo)?,
                     None => println!("not found\n"),
                 }
             }
