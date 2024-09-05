@@ -44,19 +44,20 @@ where
 /// Adds a new todo item to the end of the "todo.txt" file.
 ///
 /// ## Arguments
-///
 /// * `new_todo`: The string representing the new todo item to add.
 ///
 /// ## Returns
-///
 /// An `io::Result<()>` indicating whether the operation was successful.
 /// Returns `Ok(())` if the operation succeeds, or an `Err` containing the I/O error if it fails.
 ///
-///
 /// ## Examples
 ///
-/// ``````
-///  add _lines("Buy milk".to_string());
+/// ```
+/// match try_add_lines("Buy milk") {
+///   Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
+///   Ok(_) => println!("success!"),
+/// }
+/// ```
 pub fn try_add_lines(new_todo: &str) -> io::Result<()> {
     let path = Path::new("todo.txt");
 
@@ -102,13 +103,11 @@ pub fn find_index_opt(searched_todo: &String) -> Option<usize> {
 ///  * `delete_todo` A reference representing the todo item which is desired to be deleted
 ///
 /// ## Returns
-///
 /// An `io::Result<()>` indicating success or failure:
 /// - `Ok(())` if the operation succeeds
 /// - `Err(io::Error)` if there's an error reading or writing the file
 ///
 /// ## Errors
-///
 /// This function may return an `io::Error` due to various reasons:
 /// - Failure to read the existing todo list file
 /// - Unable to open the file for writing
@@ -117,14 +116,12 @@ pub fn find_index_opt(searched_todo: &String) -> Option<usize> {
 ///
 /// ## Examples
 /// ```
-///  use std::path::Path;
-///  let delete_todo = String::from("Buy milk");
-///  match try_update_file(&delete_todo) {
+///  match try_update_file("Buy milk") {
 ///      Ok(_) => println!("Todo list updated successfully"),
 ///      Err(e) => eprintln!("Error updating todo list: {}", e),
 ///  }
-///
-pub fn try_update_file(delete_todo: &String) -> io::Result<()> {
+///```
+pub fn try_update_file(delete_todo: &str) -> io::Result<()> {
     let path = Path::new("todo.txt");
 
     let todo_list: io::Result<Vec<String>> = match try_read_lines("todo.txt") {
