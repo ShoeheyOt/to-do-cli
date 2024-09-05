@@ -67,7 +67,10 @@ fn main() -> io::Result<()> {
                 io::stdin().read_line(&mut delete_todo)?;
 
                 match find_index_opt(&delete_todo) {
-                    Some(_) => try_update_file(&delete_todo)?,
+                    Some(_) => {
+                        try_update_file(&delete_todo)?;
+                        println!("successfully delete {}", delete_todo);
+                    }
                     None => println!("not found\n"),
                 }
             }
