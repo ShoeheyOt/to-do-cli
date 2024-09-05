@@ -5,31 +5,27 @@ use std::path::Path;
 /// Reads all lines from a file and returns them as a vector of strings.
 ///
 /// ## Arguments
-///
 /// * `filename`: The path to the file to read. Can be any type that implements `AsRef<Path>`.
 ///
 /// ## Returns
-///
 /// A `Result` containing a `Vec<String>` if successful, or an `io::Error` if an error occurs.
 ///
 /// ## Errors
-///
 /// This function will return an `io::Error` if:
 /// - The file cannot be opened (e.g., due to permissions issues)
 /// - There's an I/O error while reading the file
 /// - Any line in the file contains invalid UTF-8 data
 ///
 /// ## Examples
-///
 /// ```
 /// use std::path::Path;
 /// use std::fs::File;
-/// let filename = Path::new("example.txt");
-/// match try_read_lines(filename) {
-///   Ok(lines) => println!("Lines: {:?}", lines),
-///   Err(e) => eprintln!("Error reading file: {}", e),
-/// }
-///
+///  let filename = Path::new("example.txt");
+///  match try_read_lines(filename) {
+///    Ok(lines) => println!("Lines: {:?}", lines),
+///    Err(e) => eprintln!("Error reading file: {}", e),
+///    }
+///  ```
 pub fn try_read_lines<P>(filename: P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
@@ -38,7 +34,7 @@ where
         .create(true)
         .write(true)
         .read(true)
-        .open(filename)?;
+        .open(&filename)?;
 
     let reader = io::BufReader::new(&file);
 
