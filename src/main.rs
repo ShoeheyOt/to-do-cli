@@ -16,20 +16,21 @@ fn main() -> io::Result<()> {
         io::stdin().read_line(&mut input)?;
 
         if input.trim() == "1" {
-            if try_read_lines("todo.txt")?.len() == 0 {
-                println!("nothing to do for now \n");
-                io::stdout().flush()?;
-            } else {
-                match try_read_lines("todo.txt") {
-                    Err(why) => println!("couldn't read file : {}", why),
-                    Ok(vector) => {
-                        for todo in vector {
+            match try_read_lines("todo.txt") {
+                Ok(lines) => {
+                    if lines.is_empty() {
+                        println!("nothing to do for now \n");
+                        io::stdout().flush()?;
+                    } else {
+                        for todo in lines {
                             println!("{}", todo)
                         }
                     }
                 }
-                println!("\n");
+                Err(why) => eprintln!("Error reading file : {}", why),
             }
+            println!("\n");
+
             continue;
         }
 

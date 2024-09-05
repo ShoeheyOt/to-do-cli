@@ -1,4 +1,4 @@
-use std::fs::{File, OpenOptions};
+use std::fs::OpenOptions;
 use std::io::{self, BufRead, Write};
 use std::path::Path;
 
@@ -25,7 +25,7 @@ use std::path::Path;
 /// use std::path::Path;
 /// use std::fs::File;
 /// let filename = Path::new("example.txt");
-/// match read_lines(filename) {
+/// match try_read_lines(filename) {
 ///   Ok(lines) => println!("Lines: {:?}", lines),
 ///   Err(e) => eprintln!("Error reading file: {}", e),
 /// }
@@ -34,8 +34,13 @@ pub fn try_read_lines<P>(filename: P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
 {
-    let file = File::open(filename)?;
-    let reader = io::BufReader::new(file);
+    let file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .read(true)
+        .open(filename)?;
+
+    let reader = io::BufReader::new(&file);
 
     Ok(reader.lines().filter_map(|line| line.ok()).collect())
 }
