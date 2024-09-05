@@ -125,15 +125,16 @@ pub fn find_index_opt(searched_todo: &String) -> Option<usize> {
 ///
 pub fn update_file(delete_todo: &String) -> io::Result<()> {
     let path = Path::new("todo.txt");
-    let todo_list: Vec<String> = match read_lines("todo.txt") {
+
+    let todo_list: io::Result<Vec<String>> = match read_lines("todo.txt") {
         Err(why) => {
             eprintln!("couldn't read lines: {}", why);
-            vec![]
+            Err(why)
         }
-        Ok(vector) => vector
+        Ok(vector) => Ok(vector
             .into_iter()
             .filter(|todo| *todo != delete_todo.trim())
-            .collect(),
+            .collect::<Vec<String>>()),
     };
 
     let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path) {
@@ -141,7 +142,7 @@ pub fn update_file(delete_todo: &String) -> io::Result<()> {
         Ok(file) => file,
     };
 
-    for todo in todo_list {
+    for todo in todo_list? {
         writeln!(file_truncate, "{}", todo)?;
     }
     Ok(())
