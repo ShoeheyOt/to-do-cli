@@ -16,12 +16,17 @@ fn main() -> io::Result<()> {
         io::stdin().read_line(&mut input)?;
 
         if input.trim() == "1" {
-            if read_lines("todo.txt").len() == 0 {
+            if read_lines("todo.txt")?.len() == 0 {
                 println!("nothing to do for now \n");
                 io::stdout().flush()?;
             } else {
-                for todo in read_lines("todo.txt") {
-                    println!("{}", todo)
+                match read_lines("todo.txt") {
+                    Err(why) => println!("couldn't read file : {}", why),
+                    Ok(vector) => {
+                        for todo in vector {
+                            println!("{}", todo)
+                        }
+                    }
                 }
                 println!("\n");
             }
@@ -42,14 +47,18 @@ fn main() -> io::Result<()> {
         }
 
         if input.trim() == "3" {
-            if read_lines("todo.txt").len() == 0 {
+            if read_lines("todo.txt")?.len() == 0 {
                 println!("Nothing to delete now \n");
                 io::stdout().flush()?;
             } else {
                 println!("which one? >");
-
-                for todo in read_lines("todo.txt") {
-                    println!("{}", todo)
+                match read_lines("todo.txt") {
+                    Err(why) => eprintln!("couldn't read file : {}", why),
+                    Ok(vector) => {
+                        for todo in vector {
+                            println!("{}", todo)
+                        }
+                    }
                 }
 
                 let mut delete_todo = String::new();

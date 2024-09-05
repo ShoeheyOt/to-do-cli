@@ -1,5 +1,5 @@
-use std::fs::{read_to_string, OpenOptions};
-use std::io::{self, Write};
+use std::fs::{File, OpenOptions};
+use std::io::{self, BufRead, Write};
 use std::path::Path;
 
 /// this is a function to read lines from text file
@@ -8,12 +8,18 @@ use std::path::Path;
 ///
 ///
 ///
-pub fn read_lines(filename: &str) -> Vec<String> {
-    let mut vector = Vec::<String>::new();
-    for line in read_to_string(filename).unwrap().lines() {
-        vector.push(line.to_string());
-    }
-    vector
+pub fn read_lines<P>(filename: P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    // let mut vector = Vec::new();
+    let file = File::open(filename)?;
+    let reader = io::BufReader::new(file);
+    // for line in reader.lines() {
+    //     vector.push(line?);
+    // }
+
+    Ok(reader.lines().filter_map(|line| line.ok()).collect())
 }
 /// Adds a new todo item to the end of the "todo.txt" file.
 ///
@@ -41,17 +47,30 @@ pub fn add_lines(new_todo: &str) -> io::Result<()> {
 }
 
 pub fn find_position(delete_todo: &String) -> Option<usize> {
-    read_lines("todo.txt")
-        .iter()
-        .position(|todo| todo == delete_todo.trim())
+    match read_lines("todo.txt") {
+        Err(why) => {
+            println!("couldn't read the lines : {}", why);
+            None
+        }
+        Ok(vector) => vector.iter().position(|todo| todo == delete_todo.trim()),
+    }
 }
 
 pub fn update_file(delete_todo: &String) -> io::Result<()> {
     let path = Path::new("todo.txt");
-    let todo_list: Vec<String> = read_lines("todo.txt")
-        .into_iter()
-        .filter(|todo| *todo != delete_todo.trim())
-        .collect();
+    let todo_list: Vec<String> = match read_lines("todo.txt") {
+        Err(why) => {
+            println!("couldn't read lines: {}", why);
+            vec![]
+        }
+        Ok(vector) => vector
+            .into_iter()
+            .filter(|todo| *todo != delete_todo.trim())
+            .collect(),
+    };
+    // .into_iter()
+    // .filter(|todo| *todo != delete_todo.trim())
+    // .collect();
 
     let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path) {
         Err(why) => panic!("couldn't open the file {} : {}", path.display(), why),
