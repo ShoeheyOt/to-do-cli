@@ -62,5 +62,3 @@ Contributors are welcome! Please feel free to submit pull request or report issu
 ## License
 
 This project is licensed under the MIT License
-
-##
