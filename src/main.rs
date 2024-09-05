@@ -1,5 +1,5 @@
 pub mod file_operation;
-use file_operation::{add_lines, find_position, read_lines, update_file};
+use file_operation::{add_lines, find_index_opt, read_lines, update_file};
 
 use std::io;
 use std::io::prelude::*;
@@ -65,11 +65,11 @@ fn main() -> io::Result<()> {
 
                 io::stdin().read_line(&mut delete_todo)?;
 
-                match find_position(&delete_todo) {
+                match find_index_opt(&delete_todo) {
                     Some(index) => {
                         match update_file(&delete_todo) {
                             Err(why) => {
-                                println!("couldn't delete from file : {} index is {}", why, index)
+                                eprintln!("couldn't delete from file : {} index is {}", why, index)
                             }
                             Ok(_) => println!("successfully delete {}", delete_todo),
                         };

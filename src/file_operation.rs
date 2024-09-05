@@ -2,11 +2,33 @@ use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, Write};
 use std::path::Path;
 
-/// this is a function to read lines from text file
+/// Reads all lines from a file and returns them as a vector of strings.
 ///
+/// ## Arguments
 ///
+/// * `filename`: The path to the file to read. Can be any type that implements `AsRef<Path>`.
 ///
+/// ## Returns
 ///
+/// A `Result` containing a `Vec<String>` if successful, or an `io::Error` if an error occurs.
+///
+/// ## Errors
+///
+/// This function will return an `io::Error` if:
+/// - The file cannot be opened (e.g., due to permissions issues)
+/// - There's an I/O error while reading the file
+/// - Any line in the file contains invalid UTF-8 data
+///
+/// ## Examples
+///
+/// ```
+/// use std::path::Path;
+/// use std::fs::File;
+/// let filename = Path::new("example.txt");
+/// match read_lines(filename) {
+///   Ok(lines) => println!("Lines: {:?}", lines),
+///   Err(e) => eprintln!("Error reading file: {}", e),
+/// }
 ///
 pub fn read_lines<P>(filename: P) -> io::Result<Vec<String>>
 where
@@ -17,6 +39,7 @@ where
 
     Ok(reader.lines().filter_map(|line| line.ok()).collect())
 }
+
 /// Adds a new todo item to the end of the "todo.txt" file.
 ///
 /// ## Arguments
@@ -30,8 +53,9 @@ where
 ///
 ///
 /// ## Examples
-/// add _lines("Buy milk".to_string());
-/// ```
+///
+/// ``````
+///  add _lines("Buy milk".to_string());
 pub fn add_lines(new_todo: &str) -> io::Result<()> {
     let path = Path::new("todo.txt");
 
@@ -42,21 +66,68 @@ pub fn add_lines(new_todo: &str) -> io::Result<()> {
     Ok(())
 }
 
-pub fn find_position(delete_todo: &String) -> Option<usize> {
+///Find the index number from text file
+///
+/// ## Arguments
+/// * `searched_todo` : The string representing the item to find its index
+///
+/// ## Returns
+///
+/// An Option<usize> representing the position of the found todo item
+/// - `Some(index)` if the todo item is found, where `index` is from zero.
+/// - `None` if the todo item is not found or if there is an error reading the file
+///
+/// ## Example
+/// ```
+///  let todo_to_find = String::from("Buy milk");
+///  match find_position(&todo_to_find) {
+///     Some(index) => println!("Todo found at position: {}", position),
+///     None => println!("Todo not found or error reading file"),
+///  }
+/// ```
+pub fn find_index_opt(searched_todo: &String) -> Option<usize> {
     match read_lines("todo.txt") {
         Err(why) => {
-            println!("couldn't read the lines : {}", why);
+            eprintln!("couldn't read the lines : {}", why);
             None
         }
-        Ok(vector) => vector.iter().position(|todo| todo == delete_todo.trim()),
+        Ok(vector) => vector.iter().position(|todo| todo == searched_todo.trim()),
     }
 }
 
+/// OverWrite the todo list(exclude argument: `delete_todo`) to the file
+///
+/// ## Argument
+///  * `delete_todo` A reference representing the todo item which is desired to be deleted
+///
+/// ## Returns
+///
+/// An `io::Result<()>` indicating success or failure:
+/// - `Ok(())` if the operation succeeds
+/// - `Err(io::Error)` if there's an error reading or writing the file
+///
+/// ## Errors
+///
+/// This function may return an `io::Error` due to various reasons:
+/// - Failure to read the existing todo list file
+/// - Unable to open the file for writing
+/// - Error during truncation of the file
+/// - Failure to write the updated list back to the file
+///
+/// ## Examples
+/// ```
+///  use std::path::Path;
+///  let delete_todo = String::from("Buy milk");
+///  match update_file(&delete_todo) {
+///      Ok(_) => println!("Todo list updated successfully"),
+///      Err(e) => eprintln!("Error updating todo list: {}", e),
+///  }
+///
 pub fn update_file(delete_todo: &String) -> io::Result<()> {
     let path = Path::new("todo.txt");
     let todo_list: Vec<String> = match read_lines("todo.txt") {
         Err(why) => {
-            println!("couldn't read lines: {}", why);
+            eprintln!("couldn't read lines: {}", why);
             vec![]
         }
         Ok(vector) => vector
