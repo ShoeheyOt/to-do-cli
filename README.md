@@ -47,6 +47,12 @@ A simple command-line interface for managing to-do list stored in a text file.
 - Uses Rust's Result type for error handling
 - Provides informative error messages for various scenarios
 
+### Dependencies
+
+- `std::io` : For I/O operations
+- `std::fs` : For file system operations
+- `std::path` : For working with file paths
+
 ## Building and Running
 
 To build and run the program:
