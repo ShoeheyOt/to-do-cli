@@ -12,12 +12,8 @@ pub fn read_lines<P>(filename: P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
 {
-    // let mut vector = Vec::new();
     let file = File::open(filename)?;
     let reader = io::BufReader::new(file);
-    // for line in reader.lines() {
-    //     vector.push(line?);
-    // }
 
     Ok(reader.lines().filter_map(|line| line.ok()).collect())
 }
@@ -68,9 +64,6 @@ pub fn update_file(delete_todo: &String) -> io::Result<()> {
             .filter(|todo| *todo != delete_todo.trim())
             .collect(),
     };
-    // .into_iter()
-    // .filter(|todo| *todo != delete_todo.trim())
-    // .collect();
 
     let mut file_truncate = match OpenOptions::new().write(true).truncate(true).open(path) {
         Err(why) => panic!("couldn't open the file {} : {}", path.display(), why),
