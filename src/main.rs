@@ -9,32 +9,30 @@ fn main() -> io::Result<()> {
 
     loop {
         println!("1:Display, 2:Add, 3:Delete, 4:Exit");
-        println!("Please type number ->");
+        print!("Please type number ->");
         io::stdout().flush()?;
 
         input.clear();
         io::stdin().read_line(&mut input)?;
 
         match input.trim() {
-            "1" => {
-                match try_read_lines("todo.txt") {
-                    Ok(lines) => {
-                        if lines.is_empty() {
-                            println!("nothing to do for now \n");
-                            io::stdout().flush()?;
-                        } else {
-                            for todo in lines {
-                                println!("{}", todo)
-                            }
+            "1" => match try_read_lines("todo.txt") {
+                Ok(lines) => {
+                    if lines.is_empty() {
+                        println!("nothing to do for now\n");
+                        io::stdout().flush()?;
+                    } else {
+                        for todo in lines {
+                            print!("{}", todo)
                         }
+                        println!("\n")
                     }
-                    Err(why) => eprintln!("Error reading file : {}", why),
                 }
-                println!("\n");
-            }
+                Err(why) => eprintln!("Error reading file : {}", why),
+            },
             "2" => {
                 let mut new_todo = String::new();
-                println!("please input new todo >> \n");
+                println!("please input new todo -> ");
                 io::stdout().flush()?;
                 io::stdin().read_line(&mut new_todo)?;
 
@@ -56,11 +54,13 @@ fn main() -> io::Result<()> {
                     println!("Nothing to delete now \n");
                     io::stdout().flush()?;
                 } else {
-                    println!("which one? >");
-
+                    println!("You have below remained tasks");
                     for todo in to_dos {
                         println!("{}", todo);
                     }
+                    print!("\n");
+                    print!("which one do you want to delete? ->");
+                    io::stdout().flush()?;
                 };
 
                 let mut delete_todo = String::new();
@@ -72,7 +72,7 @@ fn main() -> io::Result<()> {
                         try_update_file(&delete_todo)?;
                         println!("successfully delete {}", delete_todo);
                     }
-                    Err(_) => eprintln!("not found\n"),
+                    Err(_) => eprintln!("not found"),
                 }
             }
             "4" => {
