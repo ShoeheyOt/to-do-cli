@@ -31,8 +31,6 @@ fn main() -> io::Result<()> {
                     Err(why) => eprintln!("Error reading file : {}", why),
                 }
                 println!("\n");
-
-                // continue;
             }
             "2" => {
                 let mut new_todo = String::new();
@@ -44,7 +42,6 @@ fn main() -> io::Result<()> {
                     Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
                     Ok(_) => println!("success!\n"),
                 }
-                // continue;
             }
             "3" => {
                 let to_dos = match try_read_lines("todo.txt") {
@@ -77,8 +74,6 @@ fn main() -> io::Result<()> {
                     }
                     Err(_) => eprintln!("not found\n"),
                 }
-
-                // continue;
             }
             "4" => {
                 println!("See you!");
@@ -86,7 +81,6 @@ fn main() -> io::Result<()> {
             }
             _ => {
                 println!("type again\n");
-                // continue;
             }
         }
     }
