@@ -1,4 +1,5 @@
 use std::fs::OpenOptions;
+use std::io::Error;
 use std::io::{self, BufRead, Write};
 use std::path::Path;
 
@@ -26,7 +27,7 @@ use std::path::Path;
 ///    Err(e) => eprintln!("Error reading file: {}", e),
 ///    }
 ///  ```
-pub fn try_read_lines<P>(filename: P) -> io::Result<Vec<String>>
+pub fn try_read_lines<P>(filename: P) -> Result<Vec<String>, io::Error>
 where
     P: AsRef<Path>,
 {
@@ -87,13 +88,13 @@ pub fn try_add_lines(new_todo: &str) -> io::Result<()> {
 ///     None => println!("Todo not found or error reading file"),
 ///  }
 /// ```
-pub fn find_index_opt(searched_todo: &String) -> Option<usize> {
+pub fn find_index_opt(searched_todo: &String) -> Result<Option<usize>, Error> {
     match try_read_lines("todo.txt") {
         Err(why) => {
-            eprintln!("couldn't read the lines : {}", why);
-            None
+            println!("couldn't read the lines : {}", why);
+            Err(why)
         }
-        Ok(vector) => vector.iter().position(|todo| todo == searched_todo.trim()),
+        Ok(vector) => Ok(vector.iter().position(|todo| todo == searched_todo.trim())),
     }
 }
 

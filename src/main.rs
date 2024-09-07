@@ -32,7 +32,7 @@ fn main() -> io::Result<()> {
                 }
                 println!("\n");
 
-                continue;
+                // continue;
             }
             "2" => {
                 let mut new_todo = String::new();
@@ -44,37 +44,41 @@ fn main() -> io::Result<()> {
                     Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
                     Ok(_) => println!("success!\n"),
                 }
-                continue;
+                // continue;
             }
             "3" => {
-                if try_read_lines("todo.txt")?.len() == 0 {
+                let to_dos = match try_read_lines("todo.txt") {
+                    Ok(lines) => lines,
+                    Err(e) => {
+                        eprintln!("Couldn't read file!! : {}", e);
+                        continue;
+                    }
+                };
+
+                if to_dos.len() == 0 {
                     println!("Nothing to delete now \n");
                     io::stdout().flush()?;
                 } else {
                     println!("which one? >");
 
-                    if let Ok(vector) = try_read_lines("todo.txt") {
-                        for todo in vector {
-                            println!("{}", todo)
-                        }
-                    } else {
-                        eprintln!("couldn't read file!!!")
+                    for todo in to_dos {
+                        println!("{}", todo);
                     }
+                };
 
-                    let mut delete_todo = String::new();
+                let mut delete_todo = String::new();
 
-                    io::stdin().read_line(&mut delete_todo)?;
+                io::stdin().read_line(&mut delete_todo)?;
 
-                    match find_index_opt(&delete_todo) {
-                        Some(_) => {
-                            try_update_file(&delete_todo)?;
-                            println!("successfully delete {}", delete_todo);
-                        }
-                        None => println!("not found\n"),
+                match find_index_opt(&delete_todo) {
+                    Ok(_) => {
+                        try_update_file(&delete_todo)?;
+                        println!("successfully delete {}", delete_todo);
                     }
+                    Err(_) => eprintln!("not found\n"),
                 }
 
-                continue;
+                // continue;
             }
             "4" => {
                 println!("See you!");
@@ -82,7 +86,7 @@ fn main() -> io::Result<()> {
             }
             _ => {
                 println!("type again\n");
-                continue;
+                // continue;
             }
         }
     }
