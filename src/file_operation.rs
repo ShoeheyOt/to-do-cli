@@ -90,10 +90,7 @@ pub fn try_add_lines(new_todo: &str) -> io::Result<()> {
 /// ```
 pub fn find_index_opt(searched_todo: &String) -> Result<Option<usize>, Error> {
     match try_read_lines("todo.txt") {
-        Err(why) => {
-            println!("couldn't read the lines : {}", why);
-            Err(why)
-        }
+        Err(why) => Err(why),
         Ok(vector) => Ok(vector.iter().position(|todo| todo == searched_todo.trim())),
     }
 }

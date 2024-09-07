@@ -72,7 +72,7 @@ fn main() -> io::Result<()> {
                         try_update_file(&delete_todo)?;
                         println!("successfully delete {}", delete_todo);
                     }
-                    Err(_) => eprintln!("not found"),
+                    Err(why) => eprintln!("not found : {}", why),
                 }
             }
             "4" => {
