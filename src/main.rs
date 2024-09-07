@@ -68,11 +68,15 @@ fn main() -> io::Result<()> {
                 io::stdin().read_line(&mut delete_todo)?;
 
                 match find_index_opt(&delete_todo) {
-                    Ok(_) => {
-                        try_update_file(&delete_todo)?;
-                        println!("successfully delete {}", delete_todo);
-                    }
-                    Err(why) => eprintln!("not found : {}", why),
+                    Ok(index) => match index {
+                        None => println!("not found in the list"),
+
+                        Some(_) => {
+                            try_update_file(&delete_todo)?;
+                            println!("successfully delete {} ", delete_todo);
+                        }
+                    },
+                    Err(why) => eprintln!("couldn't read the file : {}", why),
                 }
             }
             "4" => {
