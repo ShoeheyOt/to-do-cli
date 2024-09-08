@@ -71,10 +71,10 @@ fn main() -> io::Result<()> {
                     Ok(index) => match index {
                         None => println!("not found in the list"),
 
-                        Some(_) => {
-                            try_update_file(&delete_todo)?;
-                            println!("successfully delete {} ", delete_todo);
-                        }
+                        Some(_) => match try_update_file(&delete_todo) {
+                            Err(why) => eprintln!("failed to update the file : {}", why),
+                            Ok(_) => println!("successfully delete {}", delete_todo),
+                        },
                     },
                     Err(why) => eprintln!("couldn't read the file : {}", why),
                 }

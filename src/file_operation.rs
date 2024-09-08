@@ -122,11 +122,8 @@ pub fn find_index_opt(searched_todo: &String) -> Result<Option<usize>, Error> {
 pub fn try_update_file(delete_todo: &str) -> io::Result<()> {
     let path = Path::new("todo.txt");
 
-    let todo_list: io::Result<Vec<String>> = match try_read_lines("todo.txt") {
-        Err(why) => {
-            eprintln!("couldn't read lines: {}", why);
-            Err(why)
-        }
+    let todo_list: Result<Vec<String>, Error> = match try_read_lines("todo.txt") {
+        Err(why) => Err(why),
         Ok(vector) => Ok(vector
             .into_iter()
             .filter(|todo| *todo != delete_todo.trim())
