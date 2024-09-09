@@ -4,6 +4,27 @@ use file_operation::{find_index_opt, try_add_lines, try_read_lines, try_update_f
 use std::io;
 use std::io::prelude::*;
 
+enum Mode {
+    DISPLAY,
+    ADD,
+    DELETE,
+    EXIT,
+    UNDEFINED,
+}
+
+impl From<&str> for Mode {
+    fn from(value: &str) -> Self {
+        println!("{:?}", value);
+        match value {
+            "1" => Mode::DISPLAY,
+            "2" => Mode::ADD,
+            "3" => Mode::DELETE,
+            "4" => Mode::EXIT,
+            _ => Mode::UNDEFINED,
+        }
+    }
+}
+
 fn main() -> io::Result<()> {
     let mut input = String::new();
 
@@ -15,24 +36,31 @@ fn main() -> io::Result<()> {
         input.clear();
         io::stdin().read_line(&mut input)?;
 
-        match input.trim() {
-            "1" => match try_read_lines("todo.txt") {
-                Ok(lines) => {
-                    if lines.is_empty() {
-                        println!("nothing to do for now\n");
-                        io::stdout().flush()?;
-                    } else {
-                        for todo in lines {
-                            print!("{}", todo)
+
+        let mode = Mode::from(input.trim());
+
+        match mode {
+            Mode::DISPLAY => {
+                match try_read_lines("todo.txt") {
+                    Ok(lines) => {
+                        if lines.is_empty() {
+                            println!("nothing to do for now \n");
+                            io::stdout().flush()?;
+                        } else {
+                            for todo in lines {
+                                println!("{}", todo)
+                            }
+
                         }
                         println!("\n")
                     }
+                    Err(why) => eprintln!("Error reading file : {}", why),
                 }
-                Err(why) => eprintln!("Error reading file : {}", why),
-            },
-            "2" => {
+
+            Mode::ADD => {
                 let mut new_todo = String::new();
                 println!("please input new todo -> ");
+
                 io::stdout().flush()?;
                 io::stdin().read_line(&mut new_todo)?;
 
@@ -41,7 +69,7 @@ fn main() -> io::Result<()> {
                     Ok(_) => println!("success!\n"),
                 }
             }
-            "3" => {
+            Mode::DELETE => {
                 let to_dos = match try_read_lines("todo.txt") {
                     Ok(lines) => lines,
                     Err(e) => {
@@ -63,9 +91,10 @@ fn main() -> io::Result<()> {
                     io::stdout().flush()?;
                 };
 
-                let mut delete_todo = String::new();
+                    let mut delete_todo = String::new();
 
-                io::stdin().read_line(&mut delete_todo)?;
+                    io::stdin().read_line(&mut delete_todo)?;
+
 
                 match find_index_opt(&delete_todo) {
                     Ok(index) => match index {
@@ -78,12 +107,15 @@ fn main() -> io::Result<()> {
                     },
                     Err(why) => eprintln!("couldn't read the file : {}", why),
                 }
+
             }
-            "4" => {
+
+            Mode::EXIT => {
                 println!("See you!");
                 break;
             }
-            _ => {
+
+            Mode::UNDEFINED => {            
                 println!("type again\n");
             }
         }
