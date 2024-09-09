@@ -36,27 +36,23 @@ fn main() -> io::Result<()> {
         input.clear();
         io::stdin().read_line(&mut input)?;
 
-
         let mode = Mode::from(input.trim());
 
         match mode {
-            Mode::DISPLAY => {
-                match try_read_lines("todo.txt") {
-                    Ok(lines) => {
-                        if lines.is_empty() {
-                            println!("nothing to do for now \n");
-                            io::stdout().flush()?;
-                        } else {
-                            for todo in lines {
-                                println!("{}", todo)
-                            }
-
+            Mode::DISPLAY => match try_read_lines("todo.txt") {
+                Ok(lines) => {
+                    if lines.is_empty() {
+                        println!("nothing to do for now \n");
+                        io::stdout().flush()?;
+                    } else {
+                        for todo in lines {
+                            println!("{}", todo)
                         }
-                        println!("\n")
                     }
-                    Err(why) => eprintln!("Error reading file : {}", why),
+                    println!("\n")
                 }
-
+                Err(why) => eprintln!("Error reading file : {}", why),
+            },
             Mode::ADD => {
                 let mut new_todo = String::new();
                 println!("please input new todo -> ");
@@ -91,10 +87,9 @@ fn main() -> io::Result<()> {
                     io::stdout().flush()?;
                 };
 
-                    let mut delete_todo = String::new();
+                let mut delete_todo = String::new();
 
-                    io::stdin().read_line(&mut delete_todo)?;
-
+                io::stdin().read_line(&mut delete_todo)?;
 
                 match find_index_opt(&delete_todo) {
                     Ok(index) => match index {
@@ -107,7 +102,6 @@ fn main() -> io::Result<()> {
                     },
                     Err(why) => eprintln!("couldn't read the file : {}", why),
                 }
-
             }
 
             Mode::EXIT => {
@@ -115,7 +109,7 @@ fn main() -> io::Result<()> {
                 break;
             }
 
-            Mode::UNDEFINED => {            
+            Mode::UNDEFINED => {
                 println!("type again\n");
             }
         }
