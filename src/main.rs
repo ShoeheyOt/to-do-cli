@@ -1,6 +1,5 @@
 pub mod file_operation;
 use file_operation::{find_index_opt, try_add_lines, try_read_lines, try_update_file};
-
 use std::io;
 use std::io::prelude::*;
 
@@ -77,6 +76,7 @@ fn main() -> io::Result<()> {
                 if to_dos.len() == 0 {
                     println!("Nothing to delete now \n");
                     io::stdout().flush()?;
+                    continue;
                 } else {
                     println!("You have below remained tasks");
                     for todo in to_dos {

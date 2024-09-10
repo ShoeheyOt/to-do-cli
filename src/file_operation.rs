@@ -53,7 +53,7 @@ where
 ///
 /// ## Examples
 ///
-/// ```
+/// ```Rust
 /// match try_add_lines("Buy milk") {
 ///   Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
 ///   Ok(_) => println!("success!"),
