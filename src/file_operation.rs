@@ -18,7 +18,7 @@ use std::path::Path;
 /// - Any line in the file contains invalid UTF-8 data
 ///
 /// ## Examples
-/// ```
+/// ```Rust
 /// use std::path::Path;
 /// use std::fs::File;
 ///  let filename = Path::new("example.txt");
