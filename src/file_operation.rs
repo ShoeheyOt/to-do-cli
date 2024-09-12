@@ -55,8 +55,8 @@ where
 ///
 /// ```Rust
 /// match try_add_lines("Buy milk") {
-///   Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
 ///   Ok(_) => println!("success!"),
+///   Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
 /// }
 /// ```
 pub fn try_add_lines(new_todo: &str) -> io::Result<()> {
@@ -81,7 +81,7 @@ pub fn try_add_lines(new_todo: &str) -> io::Result<()> {
 /// - `None` if the todo item is not found or if there is an error reading the file
 ///
 /// ## Example
-/// ```
+/// ```Rust
 ///  let todo_to_find = String::from("Buy milk");
 ///  match find_position(&todo_to_find) {
 ///     Some(index) => println!("Todo found at position: {}", position),
@@ -113,7 +113,7 @@ pub fn find_index_opt(searched_todo: &String) -> Result<Option<usize>, Error> {
 /// - Failure to write the updated list back to the file
 ///
 /// ## Examples
-/// ```
+/// ```Rust
 ///  match try_update_file("Buy milk") {
 ///      Ok(_) => println!("Todo list updated successfully"),
 ///      Err(e) => eprintln!("Error updating todo list: {}", e),

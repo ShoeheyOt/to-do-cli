@@ -60,8 +60,8 @@ fn main() -> io::Result<()> {
                 io::stdin().read_line(&mut new_todo)?;
 
                 match try_add_lines(&new_todo) {
-                    Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
                     Ok(_) => println!("success!\n"),
+                    Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
                 }
             }
             Mode::DELETE => {
