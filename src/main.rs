@@ -1,7 +1,8 @@
 pub mod file_operation;
-use file_operation::{find_index_opt, try_add_lines, try_read_lines, try_update_file};
+use file_operation::PathToDo;
 use std::io;
 use std::io::prelude::*;
+use std::path::PathBuf;
 
 enum Mode {
     DISPLAY,
@@ -25,6 +26,9 @@ impl From<&str> for Mode {
 }
 
 fn main() -> io::Result<()> {
+    let path_to_do = PathToDo {
+        path: PathBuf::from("todo.txt"),
+    };
     let mut input = String::new();
 
     loop {
@@ -38,7 +42,7 @@ fn main() -> io::Result<()> {
         let mode = Mode::from(input.trim());
 
         match mode {
-            Mode::DISPLAY => match try_read_lines("todo.txt") {
+            Mode::DISPLAY => match path_to_do.try_read_lines() {
                 Ok(lines) => {
                     if lines.is_empty() {
                         println!("nothing to do for now \n");
@@ -59,13 +63,13 @@ fn main() -> io::Result<()> {
                 io::stdout().flush()?;
                 io::stdin().read_line(&mut new_todo)?;
 
-                match try_add_lines(&new_todo) {
+                match path_to_do.try_add_lines(&new_todo) {
                     Ok(_) => println!("success!\n"),
                     Err(why) => eprintln!("couldn't add {} : {}", new_todo, why),
                 }
             }
             Mode::DELETE => {
-                let to_dos = match try_read_lines("todo.txt") {
+                let to_dos = match path_to_do.try_read_lines() {
                     Ok(lines) => lines,
                     Err(e) => {
                         eprintln!("Couldn't read file!! : {}", e);
@@ -91,11 +95,11 @@ fn main() -> io::Result<()> {
 
                 io::stdin().read_line(&mut delete_todo)?;
 
-                match find_index_opt(&delete_todo) {
+                match path_to_do.find_index_opt(&delete_todo) {
                     Ok(index) => match index {
                         None => println!("not found in the list"),
 
-                        Some(_) => match try_update_file(&delete_todo) {
+                        Some(_) => match path_to_do.try_update_file(&delete_todo) {
                             Err(why) => eprintln!("failed to update the file : {}", why),
                             Ok(_) => println!("successfully delete {}", delete_todo),
                         },
